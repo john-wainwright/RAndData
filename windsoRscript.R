@@ -1,5 +1,5 @@
 #---------------------------------------------------------------------------
-# script for R and data workshop, Windsor BSG Training Course, December 2024
+# script for R and data workshop, Windsor BSG Training Course, December 2025
 # John Wainwright  (john.wainwright@durham.ac.uk)
 #---------------------------------------------------------------------------
 #
@@ -8,18 +8,42 @@
 #Note that R always uses forward slashes (/) to show the path, whereas on
 #  Windows the default is a backslash (\)
 setwd ("c:/Path/To/This/Folder")
+#Some would argue that setting the working directory in the script runs counter
+#  to the aims of reproducible science (because the absolute folder structure is
+#  unlikely to be the same on other machines.  The alternative approach is to add a 
+#  note to use the RStudio Menu -- go to Session --> Set Working Directory -->
+#  To Source File Location
 
-#Set the location of the saved output
+#Set the location of the saved output (works if the whole script is run using
+#  the Source option - don't run in interactive mode or you won't see the console
+#  output)
 #paste0 joins two or more strings of text together
 sink (paste0 ("./results/results", Sys.Date (), ".txt"))
 
 #Open the libraries we will use in the script
-library (tidyverse)
-library (gridExtra)
-library (grid)
+#The require funtion tells R to try to load in the library package.  If it is 
+#  not already installed on the system, this loading will fail and return a 
+#  FALSE value.  So the if statement tells R that if this occurs, it should 
+#  install the library from CRAN and then load it using the library function.
+#If you are working locally and know which packages you have, you only need the
+#  library call.
+if (!require (tidyverse)){
+  install.packages ("tidyverse")
+  library (tidyverse)
+}
+
+if (!require (gridExtra)){
+  install.packages ("gridExtra")
+  library (gridExtra)
+}
+
+if (!require (grid)){
+  install.packages ("grid")
+  library (grid)
+}
 
 #Read in the Durham Weather data file
-durhamData <- read.csv ("./data/DurhamWeather1850_2022.csv",
+durhamData <- read.csv ("./data/DurhamWeather1850_2025.csv",
                         header = TRUE)
 #check the top of the dataset looks OK
 head (durhamData)
@@ -30,6 +54,7 @@ summary (durhamData)
 mean (durhamData$Tmax, na.rm = TRUE)
 median (durhamData$Tmax, na.rm = TRUE)
 sd (durhamData$Tmax, na.rm = TRUE)
+#add your own calculations here for the Tmin and rainfall data series:
 
 #use the lubridate function make_date () to generate a new variable with the 
 #  date of observation in sequence
@@ -39,6 +64,8 @@ durhamData <- durhamData %>%
 #use ggplot to check the data
 ggplot (data = durhamData) +
   geom_line (aes (x = date, y = Tmax))
+#add your own plots here for the Tmin and rainfall data series:
+
 
 #calculate annual statistics
 durhamAnnual <- durhamData %>%
@@ -59,9 +86,9 @@ ggplot (data = durhamAnnual) +
 
 tail (durhamData)
 
-#filter out the 2022 data to stop the odd values at the end
+#filter out the 2025 data to stop the odd values at the end
 durhamAnnual <- durhamData %>%
-  filter (year < 2022) %>%
+  filter (year < 2025) %>%
   group_by (year) %>%
   summarize (Tmax = mean (Tmax, na.rm = TRUE),
              Tmin = mean (Tmin, na.rm = TRUE),
@@ -88,6 +115,8 @@ ggplot (data = durhamAnnual) +
   geom_line (aes (x = year, y = Tmean, colour = "Tmean")) +
   geom_line (aes (x = year, y = Tmin, colour = "Tmin")) +
   labs (x = "year", y = "temperature [°C]", colour = "variable")
+
+##Comparing with other long data series
 
 #Reading in the CET and EWP datasets
 CET <- read.table ("./data/meantemp_seasonal_totals.txt",
