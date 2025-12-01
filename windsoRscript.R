@@ -293,14 +293,15 @@ ggsave ("./images/DurhamClimateComparisons.jpg",
 
 #Climate change?  Looking at 30-year intervals
 dateRanges <- c ("1850-1879", "1880-1909", "1910-1939",
-                 "1939-1969", "1970-1999", "2000-2021")
+                 "1939-1969", "1970-1999", "2000-2024")
 durham30YearBlocks <- durhamAnnual %>%
   mutate (thirty_year = as.factor (dateRanges [trunc ((year - 1850) / 
                                                         30, 0) + 1]))
 
 ggplot  (data = durham30YearBlocks) +
   geom_histogram (aes (x = rainfall)) +
-  facet_grid (~thirty_year)
+  facet_grid (~thirty_year) +
+  labs (x = "rainfall  [mm]")
 
 std.err <- function (x){
   output <- sd (x, na.rm = TRUE) / sqrt (sum (!is.na (x)))
